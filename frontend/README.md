@@ -1,32 +1,41 @@
-# React + TypeScript + Vite
+# Alchemy of Art History — React SPA Frontend (ЛР5)
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+Веб-приложение на **React + TypeScript + Vite** для каталога исторических пигментов, исследования их оптико-спектральных качеств (коэффициенты отражения R и поглощения A) и просмотра микроскопии.
 
-Currently, two official plugins are available:
+## 🛠 Технологии и библиотеки
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- **React 18** (Функциональные компоненты и хуки `useState`, `useEffect`)
+- **TypeScript** (Строгая типизация)
+- **Vite 8** (Сборщик и локальный dev-сервер с проксированием CORS)
+- **React Router DOM 6** (Роутинг, `useParams`, `useNavigate`, `useOutletContext`, `Outlet`)
+- **React Bootstrap** (UI-компоненты `Card`, `Button`, `Spinner`)
+- **Docker & Docker Compose** (Контейнеризация фронтенда)
 
-## React Compiler
+## 📱 Страницы приложения (Мобильная верстка 390px / 450px)
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+1. **Страница Плитки (`/`)**:
+   - Двухколоночный каталог пигментов (`tiles-grid`).
+   - Интерактивный слайдер фильтрации по коэффициенту поглощения `absorption` ($A \le val$).
+   - Отображение карточек пигментов из API или автономного `PIGMENTS_MOCK`.
 
-## Expanding the Oxlint configuration
+2. **Страница Ленты / Подробнее (`/detail/:id`)**:
+   - Полноэкранное воспроизведение видеомикроскопии пигмента или изображения из MinIO.
+   - Золотой заголовок в стиле `Cormorant Garamond`.
+   - Раскрывающееся описание пигмента (**«БОЛЬШЕ ▼»** / **«МЕНЬШЕ ▲»**).
+   - Боковая панель характеристик (R, A, лайки) и кнопка переключения **«ВПРЁД ▶»**.
 
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
+## 🚀 Команды запуска
 
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
+```bash
+# 1. Установка зависимостей
+npm install
+
+# 2. Запуск dev-сервера (порт 3000)
+npm run dev
+
+# 3. Сборка продакшн бандла
+npm run build
+
+# 4. Запуск в Docker
+docker-compose up --build
 ```
-
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
