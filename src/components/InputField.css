@@ -1,0 +1,50 @@
+.inputField {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background: var(--bg-card);
+  padding: 16px;
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  margin-bottom: 20px;
+}
+
+.inputFieldHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.inputFieldLabel {
+  font-size: 14px;
+  color: var(--gold);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+}
+
+.filterSlider {
+  width: 100%;
+  height: 6px;
+  background: #27272a;
+  border-radius: 3px;
+  -webkit-appearance: none;
+  cursor: pointer;
+  accent-color: var(--gold);
+}
+
+.searchBtn {
+  width: 100%;
+  padding: 10px;
+  background: var(--gold) !important;
+  color: #000 !important;
+  border: none !important;
+  border-radius: 6px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+}
+
+.searchBtn:hover {
+  background: var(--gold-hover) !important;
+}
