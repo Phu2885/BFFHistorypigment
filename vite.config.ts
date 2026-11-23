@@ -12,13 +12,16 @@ export default defineConfig({
       usePolling: true,
     },
     proxy: {
+      // AJAX к веб-сервису Go — обход CORS через обратный прокси Vite
       '/api': {
-        target: 'http://localhost:8080',
+        target: process.env.API_TARGET ?? 'http://localhost:8080',
         changeOrigin: true,
       },
+      // Второй маршрут — изображения и видео напрямую из S3 (MinIO)
       '/minio': {
-        target: 'http://localhost:8080',
+        target: 'http://localhost:9000',
         changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/minio/, ''),
       },
     },
   },

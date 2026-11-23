@@ -1,4 +1,4 @@
-import type { Pigment } from "./pigmentsApi";
+import type { Pigment } from "../api/Api";
 
 export const PIGMENTS_MOCK: Pigment[] = [
   {

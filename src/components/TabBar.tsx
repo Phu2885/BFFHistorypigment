@@ -1,62 +1,74 @@
 import "./TabBar.css";
 import type { FC } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { ROUTES } from "../Routes";
-import type { Pigment } from "../modules/pigmentsApi";
+import { ROUTES, ROUTE_LABELS } from "../Routes";
+import { useAppDispatch, useAppSelector } from "../store";
+import { resetUser } from "../slices/userSlice";
+import { resetPigmentsFilter, fetchPigmentsList } from "../slices/pigmentsSlice";
+import { resetPigmentDraft } from "../slices/pigmentDraftSlice";
+import { logoutRequest, TOKEN_KEY } from "../modules/authApi";
+import { api } from "../api";
 
-interface Props {
-  cards: Pigment[];
-}
-
-export const TabBar: FC<Props> = ({ cards }) => {
+export const TabBar: FC = () => {
   const navigate = useNavigate();
-  const location = useLocation();
+  const { pathname } = useLocation();
+  const dispatch = useAppDispatch();
+  const { isAuthenticated, login } = useAppSelector((s) => s.user);
 
-  const isList = location.pathname === ROUTES.LIST;
-  const isDetail = location.pathname.startsWith(ROUTES.DETAIL);
+  // ROUTES.TILES — префикс адреса ленты, поэтому сравниваем по сегменту пути
+  const isActive = (path: string) => pathname === path || pathname.startsWith(`${path}/`);
 
-  const goToList = () => navigate(ROUTES.LIST);
-
-  const goToDetail = () => {
-    const firstId = cards[0]?.id;
-    if (firstId) {
-      navigate(`${ROUTES.DETAIL}/${firstId}`);
-    } else {
-      navigate(`${ROUTES.DETAIL}/3`);
+  // Выход: axios без thunk, затем состояние в Redux вручную; фильтр сбрасывается
+  const handleLogout = async () => {
+    const token = localStorage.getItem(TOKEN_KEY);
+    try {
+      if (token) await logoutRequest(token);
+    } catch {
+      // токен мог уже истечь — всё равно переходим в режим гостя
     }
+    localStorage.removeItem(TOKEN_KEY);
+    api.setSecurityData(null);
+    dispatch(resetUser());
+    dispatch(resetPigmentsFilter());
+    dispatch(resetPigmentDraft());
+    navigate(ROUTES.TILES);
+    dispatch(fetchPigmentsList());
   };
 
-  // Навбар из 4 пунктов (как в ЛР1). В ЛР5 доступны только «Лента» и «Плитка»,
-  // «Добавление» и «Вход» появятся вместе с авторизацией (ЛР6).
   return (
     <nav className="bottom-nav">
-      <button
-        type="button"
-        className={`nav-item ${isDetail ? "active" : ""}`}
-        onClick={goToDetail}
-      >
+      <button type="button" className={`nav-item ${isActive(ROUTES.FEED) ? "active" : ""}`}
+        onClick={() => navigate(ROUTES.FEED)}>
         <span className="nav-icon">🎥</span>
-        <span>Лента</span>
+        <span>{ROUTE_LABELS.FEED}</span>
       </button>
 
-      <button type="button" className="nav-item disabled" disabled title="Доступно после входа">
-        <span className="nav-icon">➕</span>
-        <span>Добавление</span>
-      </button>
+      {isAuthenticated && (
+        <button type="button" className={`nav-item ${isActive(ROUTES.ADD) ? "active" : ""}`}
+          onClick={() => navigate(ROUTES.ADD)}>
+          <span className="nav-icon">➕</span>
+          <span>{ROUTE_LABELS.ADD}</span>
+        </button>
+      )}
 
-      <button
-        type="button"
-        className={`nav-item ${isList ? "active" : ""}`}
-        onClick={goToList}
-      >
+      <button type="button" className={`nav-item ${isActive(ROUTES.TILES) ? "active" : ""}`}
+        onClick={() => navigate(ROUTES.TILES)}>
         <span className="nav-icon">📊</span>
-        <span>Плитка</span>
+        <span>{ROUTE_LABELS.TILES}</span>
       </button>
 
-      <button type="button" className="nav-item disabled" disabled title="Будет доступно в ЛР6">
-        <span className="nav-icon">🔑</span>
-        <span>Вход</span>
-      </button>
+      {isAuthenticated ? (
+        <button type="button" className="nav-item" onClick={handleLogout} title={login}>
+          <span className="nav-icon">🚪</span>
+          <span>Выход</span>
+        </button>
+      ) : (
+        <button type="button" className={`nav-item ${isActive(ROUTES.LOGIN) ? "active" : ""}`}
+          onClick={() => navigate(ROUTES.LOGIN)}>
+          <span className="nav-icon">🔑</span>
+          <span>{ROUTE_LABELS.LOGIN}</span>
+        </button>
+      )}
     </nav>
   );
 };

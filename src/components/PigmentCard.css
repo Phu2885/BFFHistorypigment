@@ -55,3 +55,22 @@
   color: var(--text-secondary);
   white-space: nowrap;
 }
+
+.card-delete {
+  margin-top: 8px;
+  width: 100%;
+  padding: 6px;
+  border: 1px solid var(--gold);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--gold);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+}
+
+.card-delete:hover:not(:disabled) {
+  background: var(--gold);
+  color: #000;
+}

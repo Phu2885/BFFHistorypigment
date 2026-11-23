@@ -25,3 +25,16 @@
   align-items: center;
   height: 200px;
 }
+
+.mock-alert {
+  font-size: 15px;
+  padding: 8px 12px;
+  border-color: var(--gold) !important;
+  color: var(--gold) !important;
+  background: transparent !important;
+}
+
+.empty-text {
+  color: var(--text-secondary);
+  text-align: center;
+}

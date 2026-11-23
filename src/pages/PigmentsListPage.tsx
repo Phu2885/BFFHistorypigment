@@ -1,84 +1,46 @@
 import "./PigmentsListPage.css";
-import { useEffect, useState, type FC } from "react";
-import { Spinner } from "react-bootstrap";
-import { useNavigate, useOutletContext } from "react-router-dom";
-import { getPigmentsList, type Pigment } from "../modules/pigmentsApi";
+import { useEffect, type FC } from "react";
+import { Alert } from "react-bootstrap";
+import { useNavigate } from "react-router-dom";
 import { InputField } from "../components/InputField";
-import { ROUTES } from "../Routes";
 import { PigmentCard } from "../components/PigmentCard";
-import type { AppOutletContext } from "../AppLayout";
-import { PIGMENTS_MOCK } from "../modules/mock";
+import { ROUTES } from "../Routes";
+import { useAppDispatch, useAppSelector } from "../store";
+import { deletePigment, fetchPigmentsList } from "../slices/pigmentsSlice";
 
 export const PigmentsListPage: FC = () => {
-  const [searchValue, setSearchValue] = useState("1.0");
-  const [loading, setLoading] = useState(false);
-  const [pigments, setPigments] = useState<Pigment[]>(PIGMENTS_MOCK);
-  const { setCards } = useOutletContext<AppOutletContext>();
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
-
-  const applyMock = () => {
-    const val = parseFloat(searchValue);
-    let list = PIGMENTS_MOCK;
-    if (!isNaN(val)) {
-      list = PIGMENTS_MOCK.filter((p) => p.absorption !== undefined && p.absorption <= val);
-    }
-    setPigments(list.length ? list : PIGMENTS_MOCK);
-    setCards(list.length ? list : PIGMENTS_MOCK);
-    setLoading(false);
-  };
-
-  const handleSearch = () => {
-    setLoading(true);
-    const filterVal = searchValue ? parseFloat(searchValue) : undefined;
-    getPigmentsList(filterVal)
-      .then((data) => {
-        if (data && data.length) {
-          setPigments(data);
-          setCards(data);
-          setLoading(false);
-        } else {
-          applyMock();
-        }
-      })
-      .catch(applyMock);
-  };
+  const { list, loading, isMock, error } = useAppSelector((s) => s.pigments);
+  const isAuthenticated = useAppSelector((s) => s.user.isAuthenticated);
 
   useEffect(() => {
-    handleSearch();
-  }, []);
-
-  const handleCardClick = (id: number) => {
-    navigate(`${ROUTES.DETAIL}/${id}`);
-  };
+    dispatch(fetchPigmentsList()); // thunk с текущим фильтром из Redux
+  }, [dispatch, isAuthenticated]);
 
   return (
     <div className="tiles-page">
       <h2 className="section-title">Каталог пигментов</h2>
 
-      <InputField
-        value={searchValue}
-        setValue={(val) => setSearchValue(val)}
-        loading={loading}
-        onSubmit={handleSearch}
-      />
+      <InputField />
 
-      {loading && (
-        <div className="loadingBg">
-          <Spinner animation="border" style={{ color: "var(--gold)" }} />
-        </div>
-      )}
+      {isMock && <Alert variant="dark" className="mock-alert">Сервис недоступен — показаны mock-данные</Alert>}
+      {error && <Alert variant="danger">{error}</Alert>}
 
-      {!loading && (
-        <div className="tiles-grid">
-          {pigments.map((item) => (
-            <PigmentCard
-              key={item.id}
-              onClick={() => handleCardClick(item.id)}
-              {...item}
-            />
-          ))}
-        </div>
-      )}
+      <div className="tiles-grid">
+        {list.map((item) => (
+          <PigmentCard
+            key={item.id}
+            {...item}
+            canDelete={isAuthenticated && item.is_creator === 1}
+            disabled={loading}
+            onClick={() => navigate(`${ROUTES.FEED}/${item.id}`)}
+            onDelete={() => dispatch(deletePigment(item.id))}
+          />
+        ))}
+      </div>
+
+      {!loading && !list.length && <p className="empty-text">Пигменты не найдены</p>}
     </div>
   );
 };
