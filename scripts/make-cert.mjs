@@ -2,7 +2,7 @@
 // Создаёт certs/ca.crt, certs/ca.key (центр сертификации) и certs/cert.crt, certs/cert.key
 // для localhost и IP-адресов ноутбука в локальной сети (по ним заходит телефон).
 import { createCA, createCert } from "mkcert";
-import { mkdirSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { networkInterfaces } from "node:os";
 
 const ips = Object.values(networkInterfaces())
@@ -11,13 +11,16 @@ const ips = Object.values(networkInterfaces())
   .map((n) => n.address);
 const domains = ["localhost", "127.0.0.1", ...ips];
 
-const ca = await createCA({
+// центр сертификации создаётся один раз; при смене сети (новый IP) перевыпускается только сертификат
+const ca = existsSync("certs/ca.key")
+  ? { key: readFileSync("certs/ca.key", "utf8"), cert: readFileSync("certs/ca.crt", "utf8") }
+  : await createCA({
   organization: "Historypigments dev CA",
   countryCode: "RU",
   state: "Moscow",
   locality: "Moscow",
   validity: 365,
-});
+    });
 const cert = await createCert({ ca: { key: ca.key, cert: ca.cert }, domains, validity: 365 });
 
 mkdirSync("certs", { recursive: true });
