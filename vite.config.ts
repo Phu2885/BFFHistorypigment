@@ -50,6 +50,10 @@ export default defineConfig(({ mode }) => {
         workbox: {
           // приложение (js, css, html, иконки) кэшируется сразу — PWA открывается офлайн
           globPatterns: ['**/*.{js,css,html,svg,png,ico,webmanifest}'],
+          // новая версия сразу заменяет старую, старые кэши удаляются
+          skipWaiting: true,
+          clientsClaim: true,
+          cleanupOutdatedCaches: true,
           navigateFallback: `${base}index.html`,
           navigateFallbackDenylist: [/^\/api/, /^\/minio/],
           runtimeCaching: [

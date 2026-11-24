@@ -25,9 +25,10 @@ export const PigmentsListPage: FC = () => {
 
       <InputField />
 
-      {isMock && (
+      {/* на GitHub Pages mock-данные — обычный режим, плашку не показываем */}
+      {isMock && !IS_PAGES && (
         <Alert variant="dark" className="mock-alert">
-          {IS_PAGES ? "Демо-версия на GitHub Pages — показаны mock-данные" : "Сервис недоступен — показаны mock-данные"}
+          Сервис недоступен — показаны mock-данные
         </Alert>
       )}
       {error && <Alert variant="danger">{error}</Alert>}

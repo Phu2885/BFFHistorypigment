@@ -4,6 +4,7 @@ import { Alert } from "react-bootstrap";
 import { useNavigate, useParams } from "react-router-dom";
 import { ROUTES } from "../Routes";
 import { DEFAULT_IMAGE, mediaUrl } from "../modules/media";
+import { IS_PAGES } from "../modules/env";
 import { useAppDispatch, useAppSelector } from "../store";
 import { fetchPigmentsFeed, togglePigmentLike } from "../slices/pigmentsSlice";
 
@@ -74,7 +75,7 @@ export const FeedPage: FC = () => {
         />
       )}
 
-      {isMock && <div className="feed-mock-badge">mock-данные</div>}
+      {isMock && !IS_PAGES && <div className="feed-mock-badge">mock-данные</div>}
 
       <div className="feed-layout">
         <div className="feed-description-side">
