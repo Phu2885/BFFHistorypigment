@@ -8,6 +8,7 @@ import { resetPigmentsFilter, fetchPigmentsList } from "../slices/pigmentsSlice"
 import { resetPigmentDraft } from "../slices/pigmentDraftSlice";
 import { logoutRequest, TOKEN_KEY } from "../modules/authApi";
 import { api } from "../api";
+import { IS_PAGES } from "../modules/env";
 
 export const TabBar: FC = () => {
   const navigate = useNavigate();
@@ -63,7 +64,9 @@ export const TabBar: FC = () => {
           <span>Выход</span>
         </button>
       ) : (
-        <button type="button" className={`nav-item ${isActive(ROUTES.LOGIN) ? "active" : ""}`}
+        // На GitHub Pages нет бэкенда — вход недоступен, работают только mock-данные
+        <button type="button" className={`nav-item ${isActive(ROUTES.LOGIN) ? "active" : ""} ${IS_PAGES ? "disabled" : ""}`}
+          disabled={IS_PAGES} title={IS_PAGES ? "На GitHub Pages доступен только просмотр (mock)" : undefined}
           onClick={() => navigate(ROUTES.LOGIN)}>
           <span className="nav-icon">🔑</span>
           <span>{ROUTE_LABELS.LOGIN}</span>

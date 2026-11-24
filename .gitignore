@@ -22,3 +22,7 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# HTTPS: сертификаты и приватные ключи mkcert не публикуем
+certs/
+*.key

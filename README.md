@@ -1,9 +1,35 @@
-# Исторические пигменты — фронтенд (ЛР6)
+# Исторические пигменты — фронтенд (ЛР7)
 
 Одностраничное приложение на **React + TypeScript + Vite** для каталога исторических пигментов
-(тема «Реконструкция первоначального цвета пигмента»). В ЛР6 приложение подключено к веб-сервису
-[Phu2885/Historypigments](https://github.com/Phu2885/Historypigments) (ветка `JWT`), добавлены
-вход колориста и добавление пигментов.
+(тема «Реконструкция первоначального цвета пигмента»). Бэкенд — веб-сервис на Go:
+[Phu2885/Historypigments](https://github.com/Phu2885/Historypigments) (ветка `JWT`).
+
+**Демо на GitHub Pages (только mock-данные):** https://phu2885.github.io/BFFHistorypigment/
+
+## ЛР7: адаптивность, PWA, GitHub Pages, HTTPS
+
+- **GitHub Pages.** `npm run deploy` собирает приложение с `mode: "pages"` (`base: /BFFHistorypigment/`,
+  `basename` у `BrowserRouter`) и публикует папку `dist` в ветку `gh-pages`. На Pages нет бэкенда,
+  поэтому плитка и лента берут данные из mock-коллекции, а вход отключён.
+- **PWA.** `vite-plugin-pwa`: манифест (название, иконки 192/512, `display: standalone`) и service worker,
+  который кэширует приложение для работы офлайн. Регистрация — `registerSW` в `src/main.tsx`.
+- **HTTPS.** `npm run cert` (пакет `mkcert`) создаёт центр сертификации и сертификат для `localhost`
+  и IP ноутбука в локальной сети; Vite запускается по HTTPS (`server.https`) и доступен по сети (`host: true`).
+  Телефон открывает `https://<IP ноутбука>:3000`, а Vite как обратный прокси передаёт `/api` и `/minio`
+  на бэкенд и MinIO ноутбука. Ключи лежат в `certs/` и в git не попадают.
+- **Адаптивность** (`src/adaptive.css`):
+
+  | Ширина окна | Ширина приложения | Колонок плитки | Отступ между карточками |
+  |---|---|---|---|
+  | до 360px | 100% | 2 | 10px |
+  | до 599px (телефон) | 100% | 2 | 15px |
+  | 600–1023px (планшет) | 720px | 3 | 20px |
+  | от 1024px (ноутбук) | 1100px | 4 | 24px |
+
+  Лента на экранах от 768px остаётся колонкой 480px по центру (вертикальное видео 9:16),
+  страница добавления делится на две колонки: окна фото/видео слева, поля формы справа.
+
+## Что было в ЛР6
 
 - **Redux Toolkit**: фильтр поглощения, плитка, лента, черновик и состояние пользователя.
 - **redux-thunk** и клиент на **axios**, сгенерированный из Swagger (`npm run generate-api`), — 7 методов домена пигментов.
@@ -72,7 +98,9 @@
 
 ```bash
 npm install
-npm run dev            # http://localhost:3000, бэкенд на :8080
+npm run cert           # один раз: сертификат для HTTPS (localhost и IP ноутбука)
+npm run dev            # https://localhost:3000 и https://<IP ноутбука>:3000, бэкенд на :8080
+npm run build:pages    # сборка для GitHub Pages
+npm run deploy         # сборка и публикация в ветку gh-pages
 npm run generate-api   # пересоздать src/api/Api.ts из Swagger бэкенда
-npm run build
 ```

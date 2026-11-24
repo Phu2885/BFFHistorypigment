@@ -14,8 +14,9 @@
 
 .tiles-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 15px;
+  /* число колонок и отступ меняются по ширине экрана — src/adaptive.css */
+  grid-template-columns: repeat(var(--tiles-columns, 2), 1fr);
+  gap: var(--tiles-gap, 15px);
   padding-bottom: 40px;
 }
 

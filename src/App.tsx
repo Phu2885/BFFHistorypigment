@@ -1,6 +1,7 @@
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { AppLayout } from "./AppLayout";
 import { ROUTES } from "./Routes";
+import { BASE_URL } from "./modules/env";
 import PigmentsListPage from "./pages/PigmentsListPage";
 import FeedPage from "./pages/FeedPage";
 import AddPigmentPage from "./pages/AddPigmentPage";
@@ -8,7 +9,8 @@ import LoginPage from "./pages/LoginPage";
 
 function App() {
   return (
-    <BrowserRouter>
+    // basename: на GitHub Pages приложение открывается по адресу /BFFHistorypigment/
+    <BrowserRouter basename={BASE_URL.replace(/\/$/, "") || "/"}>
       <Routes>
         <Route element={<AppLayout />}>
           <Route path={ROUTES.TILES} element={<PigmentsListPage />} />

@@ -7,6 +7,7 @@ import { PigmentCard } from "../components/PigmentCard";
 import { ROUTES } from "../Routes";
 import { useAppDispatch, useAppSelector } from "../store";
 import { deletePigment, fetchPigmentsList } from "../slices/pigmentsSlice";
+import { IS_PAGES } from "../modules/env";
 
 export const PigmentsListPage: FC = () => {
   const dispatch = useAppDispatch();
@@ -24,7 +25,11 @@ export const PigmentsListPage: FC = () => {
 
       <InputField />
 
-      {isMock && <Alert variant="dark" className="mock-alert">Сервис недоступен — показаны mock-данные</Alert>}
+      {isMock && (
+        <Alert variant="dark" className="mock-alert">
+          {IS_PAGES ? "Демо-версия на GitHub Pages — показаны mock-данные" : "Сервис недоступен — показаны mock-данные"}
+        </Alert>
+      )}
       {error && <Alert variant="danger">{error}</Alert>}
 
       <div className="tiles-grid">

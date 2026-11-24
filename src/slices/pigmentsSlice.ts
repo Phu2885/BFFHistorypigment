@@ -2,6 +2,7 @@ import { createAsyncThunk, createSlice, type PayloadAction } from "@reduxjs/tool
 import { api } from "../api";
 import type { Pigment } from "../api/Api";
 import { PIGMENTS_MOCK } from "../modules/mock";
+import { IS_PAGES } from "../modules/env";
 import type { RootState } from "../store";
 
 // Слайс домена услуг: фильтр поглощения, плитка и лента пигментов.
@@ -40,6 +41,8 @@ export const fetchPigmentsList = createAsyncThunk<
 >("pigments/fetchPigmentsList", async (_, { getState, rejectWithValue }) => {
   const { pigments, user } = getState();
   const filter = parseFloat(pigments.absorptionFilter);
+  // GitHub Pages: бэкенда нет, сразу берём mock-коллекцию с тем же фильтром
+  if (IS_PAGES) return { data: filterMock(pigments.absorptionFilter), isMock: true };
   try {
     const { data } = await api.pigments.getPigmentsList(isNaN(filter) ? {} : { filter });
     return { data: data.data ?? [], isMock: false };
@@ -58,17 +61,20 @@ export const fetchPigmentsFeed = createAsyncThunk<
   { state: RootState; rejectValue: string }
 >("pigments/fetchPigmentsFeed", async (params, { getState, rejectWithValue }) => {
   const { id, next } = params ?? {};
+  const fromMock = () => {
+    const index = PIGMENTS_MOCK.findIndex((p) => p.id === id);
+    return next
+      ? PIGMENTS_MOCK[(index + 1) % PIGMENTS_MOCK.length]
+      : PIGMENTS_MOCK[Math.max(index, 0)];
+  };
+  if (IS_PAGES) return { data: fromMock(), isMock: true };
   try {
     const { data } = await api.pigments.getPigmentsFeed({ id, next });
     if (!data.data) throw new Error("empty feed");
     return { data: data.data, isMock: false };
   } catch {
     if (!getState().user.isAuthenticated) {
-      const index = PIGMENTS_MOCK.findIndex((p) => p.id === id);
-      const mock = next
-        ? PIGMENTS_MOCK[(index + 1) % PIGMENTS_MOCK.length]
-        : PIGMENTS_MOCK[Math.max(index, 0)];
-      return { data: mock, isMock: true };
+      return { data: fromMock(), isMock: true };
     }
     return rejectWithValue("Лента недоступна");
   }

@@ -5,6 +5,8 @@ import App from './App.tsx'
 import { store } from './store'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import './index.css'
+import './adaptive.css'
+import { registerSW } from 'virtual:pwa-register'
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
@@ -13,3 +15,8 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
     </Provider>
   </React.StrictMode>,
 )
+
+// PWA: регистрируем service worker (vite-plugin-pwa), он кэширует приложение для работы офлайн
+if ('serviceWorker' in navigator) {
+  registerSW({ immediate: true })
+}

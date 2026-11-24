@@ -1,5 +1,5 @@
 .appShell {
-  max-width: 500px;
+  max-width: var(--shell-width, 100%); /* размеры по брейкпоинтам — src/adaptive.css */
   margin: 0 auto;
   min-height: 100vh;
   display: flex;
