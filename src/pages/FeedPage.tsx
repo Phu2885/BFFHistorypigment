@@ -7,6 +7,17 @@ import { DEFAULT_IMAGE, mediaUrl } from "../modules/media";
 import { useAppDispatch, useAppSelector } from "../store";
 import { fetchPigmentsFeed, togglePigmentLike } from "../slices/pigmentsSlice";
 
+// React не выставляет HTML-атрибут muted, а без него Safari (iPhone) и Chrome
+// не запускают видео автоматически — ставим атрибут сами и запускаем воспроизведение.
+const startVideo = (el: HTMLVideoElement | null) => {
+  if (!el) return;
+  el.muted = true;
+  el.setAttribute("muted", "");
+  el.play().catch(() => {
+    // браузер может запретить автозапуск — тогда остаётся обложка (poster)
+  });
+};
+
 export const FeedPage: FC = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -50,7 +61,8 @@ export const FeedPage: FC = () => {
   return (
     <div className="feed-page">
       {video ? (
-        <video key={video} className="video-bg" src={video} poster={image} autoPlay loop muted playsInline />
+        <video key={video} ref={startVideo} className="video-bg" src={video} poster={image}
+          autoPlay loop muted playsInline preload="auto" />
       ) : (
         <img
           className="video-bg"

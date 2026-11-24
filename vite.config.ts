@@ -54,14 +54,19 @@ export default defineConfig(({ mode }) => {
           navigateFallbackDenylist: [/^\/api/, /^\/minio/],
           runtimeCaching: [
             {
-              // изображения и видео mock-данных кэшируются при первом просмотре
-              urlPattern: ({ url }) => url.pathname.includes('/assets/'),
+              // изображения mock-данных кэшируются при первом просмотре
+              urlPattern: ({ url }) => url.pathname.includes('/assets/images/'),
               handler: 'CacheFirst',
               options: {
-                cacheName: 'pigment-media',
+                cacheName: 'pigment-images',
                 expiration: { maxEntries: 60 },
-                rangeRequests: true,
               },
+            },
+            {
+              // видео (6–15 МБ) не кэшируем: браузер загружает их потоком по частям (Range),
+              // иначе service worker сначала скачивает файл целиком и видео не стартует
+              urlPattern: ({ url }) => url.pathname.includes('/assets/videos/'),
+              handler: 'NetworkOnly',
             },
           ],
         },
