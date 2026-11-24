@@ -9,7 +9,7 @@ const REPO_NAME = 'BFFHistorypigment'
 
 // Сертификат для HTTPS создаётся командой npm run cert (пакет mkcert, см. scripts/make-cert.mjs).
 // Приватные ключи в git не попадают (.gitignore).
-const certDir = path.resolve(__dirname, 'certs')
+const certDir = path.resolve(import.meta.dirname, 'certs')
 const https = fs.existsSync(path.join(certDir, 'cert.key'))
   ? {
       key: fs.readFileSync(path.join(certDir, 'cert.key')),
