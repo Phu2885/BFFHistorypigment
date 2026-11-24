@@ -26,3 +26,6 @@ dist-ssr
 # HTTPS: сертификаты и приватные ключи mkcert не публикуем
 certs/
 *.key
+
+# vite-plugin-pwa: service worker для режима разработки
+dev-dist/
